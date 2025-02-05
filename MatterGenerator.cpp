@@ -37,14 +37,13 @@ float MatterGenerator::getMassForRadius(float radius) {
 }
 
 sf::Vector2f MatterGenerator::getRandomPosition() {
-    float minDistance = 100.0f; // Минимальное расстояние от чёрной дыры
-    float maxDistance = 17500.0f; // Максимальное расстояние от чёрной дыры
+    float minDistance = 100.0f; // Мінімальна відстань від чорної діри
+    float maxDistance = 17500.0f; //Максимальна відстань від чорної діри
     float distance = minDistance + static_cast<float>(std::rand()) / RAND_MAX * (maxDistance - minDistance);
 
-    // Генерируем угол от 0 до 2π
+    // Генеруємо кут від 0 до 2π
     float angle = static_cast<float>(std::rand()) / RAND_MAX * 2.0f * 3.14159265f;
 
-    // Вычисляем координаты
     float x = blackHolePosition.x + distance * std::cos(angle);
     float y = blackHolePosition.y + distance * std::sin(angle);
 
@@ -55,14 +54,12 @@ sf::Vector2f MatterGenerator::getOrbitalVelocity(const sf::Vector2f& position) {
     sf::Vector2f direction = position - blackHolePosition;
     float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
 
-    // Нормализуем направление
     direction /= distance;
 
-    // Вычисляем орбитальную скорость v = sqrt(G * M / R)
-    float G = 1.0f; // Гравитационная постоянная
+    // Обчислюємо орбітальну швидкість v = sqrt (G * M / R)
+    float G = 1.0f;
     float speed = std::sqrt(G * blackHoleMass / distance);
 
-    // Увеличиваем скорость с помощью множителя
     float speedMultiplier = 3.0f; 
     speed *= speedMultiplier;
 
@@ -81,7 +78,7 @@ Matter::Matter(float radius, float mass, sf::Vector2f position, sf::Vector2f vel
 void Matter::applyGravity(const sf::Vector2f& blackHolePosition, float blackHoleMass, float deltaTime) {
     sf::Vector2f direction = blackHolePosition - shape.getPosition();
     float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
-    direction /= distance; // Нормализуем направление
+    direction /= distance; 
 
     // Вычисляем силу притяжения
     float G = 1.0f; // Гравитационная постоянная
@@ -90,7 +87,6 @@ void Matter::applyGravity(const sf::Vector2f& blackHolePosition, float blackHole
     // Вычисляем ускорение
     sf::Vector2f acceleration = direction * (force / mass);
 
-    // Обновляем скорость
     velocity += acceleration * deltaTime;
 }
 
@@ -103,21 +99,18 @@ bool Matter::checkCollision(const Matter& other) const {
 
 void Matter::resolveCollision(Matter& other) {
 
-    // Нормаль между объектами
     sf::Vector2f normal = other.shape.getPosition() - shape.getPosition();
     float distance = std::sqrt(normal.x * normal.x + normal.y * normal.y);
     normal /= distance;
 
-    // Относительная скорость
     sf::Vector2f relativeVelocity = other.velocity - velocity;
 
-    // Скорость вдоль нормали
     float velocityAlongNormal = relativeVelocity.x * normal.x + relativeVelocity.y * normal.y;
 
     if (velocityAlongNormal > 0)
         return;
 
-    float restitution = 1.0f; // 1.0f для полностью упругого столкновения
+    float restitution = 1.0f; // 1.0f для повністю пружного зіткнення
 
     float impulseScalar = -(1 + restitution) * velocityAlongNormal;
     impulseScalar /= (1 / mass + 1 / other.mass);

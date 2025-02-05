@@ -5,7 +5,7 @@ BlackHole::BlackHole(float radius, float mass, sf::Vector2f position, float rota
     shape.setFillColor(sf::Color::Red);
     shape.setOrigin(radius, radius);
     shape.setPosition(position);
-    shape.setRotation(0.0f); // Инициализируем начальный угол поворота
+    shape.setRotation(0.0f); // Ініціалізуємо початковий кут повороту
 }
 
 void BlackHole::update(float deltaTime) {

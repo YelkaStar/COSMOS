@@ -6,7 +6,7 @@
 #include <utility>
 #include "MatterGenerator.hpp"
 
-// Определение хэш-функции для std::pair
+// Визначення хеш-функції для std::pair
 struct pair_hash {
     template <class T1, class T2>
     std::size_t operator() (const std::pair<T1, T2>& pair) const {

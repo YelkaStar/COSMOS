@@ -1,10 +1,11 @@
 ﻿#include <SFML/Graphics.hpp> 
 #include <omp.h>
-#include "CameraController.hpp" // Управление
-#include "MatterGenerator.hpp" // Генератор материи
-#include "BlackHole.hpp" // Черная дыра
+#include "CameraController.hpp" // Управління
+#include "MatterGenerator.hpp" // Генератор матерії
+#include "BlackHole.hpp" // Чорна діра
 #include "Ship.hpp"
 #include <cmath>
+#include <algorithm>
 #include <iostream>
 #include <random>
 #include <limits>
@@ -82,7 +83,7 @@ int main() {
     BlackHole blackHole(50.0f, 500.0f, blackHolePosition);
 
     MatterGenerator generator(blackHolePosition, blackHole.mass);
-    std::vector<Matter> matters = generator.generateMatter(7560); // Материя или же звезды "(Точки)"
+    std::vector<Matter> matters = generator.generateMatter(7560); // Матерія або зірки "(Точки)"
     std::vector<Ship> ships;
 
     float gravityMultiplier = 70.5f;
@@ -99,7 +100,7 @@ int main() {
 
     sf::Clock clock;
 
-    // начальная колония и корабль
+    // початкова колонія та корабель
     if (!matters.empty()) {
         matters[0].isColony = true;
         matters[0].shape.setFillColor(sf::Color::Green);
@@ -122,34 +123,34 @@ int main() {
                     blackHoleActive = !blackHoleActive;
                     break;
                 case sf::Keyboard::Num1:
-                    gravityMultiplier = 0.5f; // Маса дырки = Большоя скорость засасывания
+                    gravityMultiplier = 0.5f; // Маса дірки = Велика швидкість засмоктування
                     break;
                 case sf::Keyboard::Num2:
-                    gravityMultiplier = 100.0f; // Маса дырки = Большоя скорость засасывания
+                    gravityMultiplier = 100.0f; // Маса дірки = Велика швидкість засмоктування
                     break;
                 case sf::Keyboard::Num3: 
-                    gravityMultiplier = 20000.0f; // Маса дырки = Большоя скорость засасывания
+                    gravityMultiplier = 20000.0f; // Маса дірки = Велика швидкість засмоктування
                     break;
                 case sf::Keyboard::Num4:
-                    gravityMultiplier = 400000.0f; // Маса дырки = Большоя скорость засасывания
+                    gravityMultiplier = 400000.0f; // Маса дірки = Велика швидкість засмоктування
                     break;
                 case sf::Keyboard::Num5:
-                    gravityMultiplier = 8000000.0f; // Маса дырки = Большоя скорость засасывания
+                    gravityMultiplier = 8000000.0f; // Маса дірки = Велика швидкість засмоктування
                     break;
                 case sf::Keyboard::Num6:
-                    gravityMultiplier = 16.0f; // Маса дырки = Большоя скорость засасывания 
+                    gravityMultiplier = 16.0f; // Маса дірки = Велика швидкість засмоктування 
                     break;
-                case sf::Keyboard::Num7: // НЕ ОПТИМИЗИРОВАНО "(Реал Физики Столкновений)"
+                case sf::Keyboard::Num7: // НЕ ОПТИМІЗОВАНО "(Реал Фізики Зіткнень)"
                     collisionHandlingActive = !collisionHandlingActive;
                     break;
-                case sf::Keyboard::Num8: { // Флаг для активации колонизацыи
+                case sf::Keyboard::Num8: { // активації колонізації
                     std::random_device rd;
                     std::mt19937 gen(rd());
                     std::uniform_int_distribution<> dis(0, matters.size() - 1);
                     int randomIndex = dis(gen);
                     matters[randomIndex].isColony = true;
                     matters[randomIndex].shape.setFillColor(sf::Color::Green);
-                    colonizationActive = true; //  колонизацыя 
+                    colonizationActive = true; //  колонізація
                     break;
                 }
                 case sf::Keyboard::P:
@@ -195,20 +196,19 @@ int main() {
                     float distance = std::sqrt(diff.x * diff.x + diff.y * diff.y);
 
                     if (distance < ships[i].shape.getRadius() + nearestMatter->shape.getRadius()) {
-                        // Сохраняем исходную колонию
                         sf::Vector2f returnPosition = ships[i].initialColonyPosition;
 
-                        // Колонизируем новую звезду
+                        // Колонізуємо нову зірку
                         nearestMatter->isColony = true;
                         nearestMatter->shape.setFillColor(sf::Color::Green);
 
-                        // Создаем новый корабль
+                        // Створюємо новий корабель
                         if (!nearestMatter->hasShip) {
                             ships.push_back(nearestMatter->createShip());
                             nearestMatter->hasShip = true;
                         }
 
-                        // Возвращаем корабль на родину 
+                        // Повертаємо корабель на батьківщину
                         ships[i].shape.setPosition(returnPosition);
                         ships[i].velocity = sf::Vector2f(0.0f, 0.0f);
 
@@ -224,7 +224,7 @@ int main() {
             }
         }
 
-        // Кил зона дырка
+        // Кіл зона дірки
         matters.erase(std::remove_if(matters.begin(), matters.end(),
             [&](const Matter& matter) {
                 sf::Vector2f direction = blackHole.getPosition() - matter.shape.getPosition();
